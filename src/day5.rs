@@ -19,11 +19,12 @@ impl Move {
     }
 }
 
-pub fn parse_stacks<'a, I>(mut lines: I) -> Vec<Vec<char>>
+pub fn parse_stacks<'a, I>(lines: I) -> Vec<Vec<char>>
 where
     I: Iterator<Item = &'a str> + Clone,
 {
     let number_of_stacks = lines
+        .clone()
         .find(|line| line.starts_with(" 1"))
         .unwrap()
         .trim()
