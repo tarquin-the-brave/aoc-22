@@ -32,7 +32,6 @@ pub enum Part {
 
 #[derive(clap::ValueEnum, Clone)]
 enum Input {
-    Example,
     Test,
     Full,
 }
@@ -66,7 +65,6 @@ impl std::fmt::Display for Part {
 impl std::fmt::Display for Input {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
-            Input::Example => write!(f, "example"),
             Input::Test => write!(f, "test"),
             Input::Full => write!(f, "full"),
         }
