@@ -72,7 +72,6 @@ pub fn part1(input: String) -> usize {
     visible_trees.len() + perimeter_trees
 }
 
-#[allow(unused_variables)]
 pub fn part2(input: String) -> usize {
     let grid = construct_grid(input);
 
