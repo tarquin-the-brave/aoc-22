@@ -1,13 +1,13 @@
 use std::collections::HashSet;
 
-pub fn part1(input: String) -> usize {
+fn day6_general(input: String, window_size: usize) -> usize {
     let chars = input.chars().collect::<Vec<_>>();
     chars
-        .windows(4)
+        .windows(window_size)
         .enumerate()
         .find_map(|(idx, window)| {
             if window.iter().collect::<HashSet<_>>().len() == window.len() {
-                Some(idx + 4)
+                Some(idx + window_size)
             } else {
                 None
             }
@@ -15,6 +15,10 @@ pub fn part1(input: String) -> usize {
         .unwrap()
 }
 
-pub fn part2(input: String) -> u32 {
-    todo!()
+pub fn part1(input: String) -> usize {
+    day6_general(input, 4)
+}
+
+pub fn part2(input: String) -> usize {
+    day6_general(input, 14)
 }
