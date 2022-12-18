@@ -6,6 +6,20 @@ pub enum Day {
     Two,
     #[value(name = "3")]
     Three,
+    #[value(name = "4")]
+    Four,
+    #[value(name = "5")]
+    Five,
+    #[value(name = "6")]
+    Six,
+    #[value(name = "7")]
+    Seven,
+    #[value(name = "8")]
+    Eight,
+    #[value(name = "9")]
+    Nine,
+    #[value(name = "10")]
+    Ten,
 }
 
 #[derive(clap::ValueEnum, Clone)]
@@ -29,6 +43,13 @@ impl std::fmt::Display for Day {
             Day::One => write!(f, "1"),
             Day::Two => write!(f, "2"),
             Day::Three => write!(f, "3"),
+            Day::Four => write!(f, "4"),
+            Day::Five => write!(f, "5"),
+            Day::Six => write!(f, "6"),
+            Day::Seven => write!(f, "7"),
+            Day::Eight => write!(f, "8"),
+            Day::Nine => write!(f, "9"),
+            Day::Ten => write!(f, "10"),
         }
     }
 }

@@ -77,14 +77,31 @@ pub fn part1(input: String) -> u32 {
     let mut total = 0;
 
     for (left_pocket, right_pocket) in parse_input(input) {
-        // println!("Left: {:?}", left_pocket);
-        // println!("Right: {:?}", right_pocket);
         let common_items = left_pocket.intersection(&right_pocket).collect::<Vec<_>>();
-        // println!("{:?}", common_items);
         // Assuming only one common item from problem description
         assert_eq!(common_items.len(), 1);
         total += priority_value(common_items[0]);
     }
 
     total
+}
+
+pub fn part2(input: String) -> u32 {
+    use itertools::Itertools as _;
+    input
+        .lines()
+        .map(str::chars)
+        .map(Iterator::collect::<HashSet<char>>)
+        .chunks(3)
+        .into_iter()
+        .map(|group| {
+            let common_items = group
+                .reduce(|a, b| a.intersection(&b).cloned().collect())
+                .unwrap()
+                .into_iter()
+                .collect::<Vec<_>>();
+            assert_eq!(common_items.len(), 1);
+            priority_value(&common_items[0])
+        })
+        .sum()
 }

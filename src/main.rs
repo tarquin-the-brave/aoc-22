@@ -2,6 +2,7 @@ mod cli;
 mod day1;
 mod day2;
 mod day3;
+mod day4;
 
 fn main() {
     use cli::{Cli, Day, Part};
@@ -27,6 +28,15 @@ fn main() {
         }
         (Day::Three, Part::One) => {
             println!("{}", day3::part1(input_str));
+        }
+        (Day::Three, Part::Two) => {
+            println!("{}", day3::part2(input_str));
+        }
+        (Day::Four, Part::One) => {
+            println!("{}", day4::part1(input_str));
+        }
+        (Day::Four, Part::Two) => {
+            println!("{}", day4::part2(input_str));
         }
         _ => unimplemented!(),
     }
