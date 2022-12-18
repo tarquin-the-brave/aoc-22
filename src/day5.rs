@@ -19,11 +19,11 @@ impl Move {
     }
 }
 
-pub fn part1(input: String) -> String {
-    let lines = input.lines();
-
+pub fn parse_stacks<'a, I>(mut lines: I) -> Vec<Vec<char>>
+where
+    I: Iterator<Item = &'a str> + Clone,
+{
     let number_of_stacks = lines
-        .clone()
         .find(|line| line.starts_with(" 1"))
         .unwrap()
         .trim()
@@ -63,6 +63,14 @@ pub fn part1(input: String) -> String {
             }
         });
 
+    stacks
+}
+
+pub fn part1(input: String) -> String {
+    let lines = input.lines();
+
+    let mut stacks = parse_stacks(lines.clone());
+
     for stack in &stacks {
         println!("{:?}", stack);
     }
@@ -90,6 +98,39 @@ pub fn part1(input: String) -> String {
         .collect::<String>()
 }
 
-pub fn part2(input: String) -> usize {
-    todo!()
+pub fn part2(input: String) -> String {
+    let lines = input.lines();
+
+    let mut stacks = parse_stacks(lines.clone());
+
+    for stack in &stacks {
+        println!("{:?}", stack);
+    }
+
+    let moves = lines
+        .clone()
+        .filter(|line| line.starts_with("move"))
+        .map(Move::parse);
+
+    for move_ in moves {
+        let mut temp_stack = Vec::new();
+        for _ in 0..move_.number_of_crates {
+            let crate_ = stacks[move_.from_stack].pop().unwrap();
+            temp_stack.push(crate_)
+        }
+        for _ in 0..move_.number_of_crates {
+            let crate_ = temp_stack.pop().unwrap();
+            stacks[move_.to_stack].push(crate_)
+        }
+    }
+
+    println!();
+    for stack in &stacks {
+        println!("{:?}", stack);
+    }
+
+    stacks
+        .iter()
+        .map(|stack| stack.iter().last().unwrap())
+        .collect::<String>()
 }
