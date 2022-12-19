@@ -116,6 +116,8 @@ impl GameState2 {
             }
             last_knot_moved_to = knot.clone();
         }
+        self.tail_visited
+            .insert(self.rope[self.rope.len() - 1].clone());
     }
 
     // move the knot if it needs to catch up with the previous
@@ -177,5 +179,6 @@ pub fn part2(input: String) -> usize {
             game.move_head(&direction);
         }
     }
+    println!("{:?}", game.rope);
     game.tail_visited_count()
 }
