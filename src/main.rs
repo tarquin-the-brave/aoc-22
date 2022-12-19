@@ -69,7 +69,8 @@ fn main() {
             println!("{}", day8::part2(input_str));
         }
         (Day::Nine, Part::One) => {
-            println!("{}", day9::part1(input_str));
+            println!("{}", day9::part1(input_str.clone()));
+            println!("{}", day9::part1_refactored(input_str));
         }
         (Day::Nine, Part::Two) => {
             println!("{}", day9::part2(input_str));

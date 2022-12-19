@@ -167,9 +167,9 @@ impl GameState2 {
     }
 }
 
-pub fn part2(input: String) -> usize {
+pub fn run_game(input: String, rope_length: u32) -> usize {
     use itertools::Itertools as _;
-    let mut game = GameState2::new(10);
+    let mut game = GameState2::new(rope_length);
     for line in input.lines() {
         let (direction_unparsed, times_unparsed) = line.split(' ').collect_tuple().unwrap();
         let direction = Direction::parse(direction_unparsed);
@@ -179,6 +179,13 @@ pub fn part2(input: String) -> usize {
             game.move_head(&direction);
         }
     }
-    println!("{:?}", game.rope);
     game.tail_visited_count()
+}
+
+pub fn part2(input: String) -> usize {
+    run_game(input, 10)
+}
+
+pub fn part1_refactored(input: String) -> usize {
+    run_game(input, 2)
 }
