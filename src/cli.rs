@@ -20,6 +20,36 @@ pub enum Day {
     Nine,
     #[value(name = "10")]
     Ten,
+    #[value(name = "11")]
+    Eleven,
+    #[value(name = "12")]
+    Twelve,
+    #[value(name = "13")]
+    Thirteen,
+    #[value(name = "14")]
+    Fourteen,
+    #[value(name = "15")]
+    Fifteen,
+    #[value(name = "16")]
+    Sixteen,
+    #[value(name = "17")]
+    Seventeen,
+    #[value(name = "18")]
+    Eighteen,
+    #[value(name = "19")]
+    Nineteen,
+    #[value(name = "20")]
+    Twenty,
+    #[value(name = "21")]
+    TwentyOne,
+    #[value(name = "22")]
+    TwentyTwo,
+    #[value(name = "23")]
+    TwentyThree,
+    #[value(name = "24")]
+    TwentyFour,
+    #[value(name = "25")]
+    TwentyFive,
 }
 
 #[derive(clap::ValueEnum, Clone)]
@@ -49,6 +79,21 @@ impl std::fmt::Display for Day {
             Day::Eight => write!(f, "8"),
             Day::Nine => write!(f, "9"),
             Day::Ten => write!(f, "10"),
+            Day::Eleven => write!(f, "11"),
+            Day::Twelve => write!(f, "12"),
+            Day::Thirteen => write!(f, "13"),
+            Day::Fourteen => write!(f, "14"),
+            Day::Fifteen => write!(f, "15"),
+            Day::Sixteen => write!(f, "16"),
+            Day::Seventeen => write!(f, "17"),
+            Day::Eighteen => write!(f, "18"),
+            Day::Nineteen => write!(f, "19"),
+            Day::Twenty => write!(f, "20"),
+            Day::TwentyOne => write!(f, "21"),
+            Day::TwentyTwo => write!(f, "22"),
+            Day::TwentyThree => write!(f, "23"),
+            Day::TwentyFour => write!(f, "24"),
+            Day::TwentyFive => write!(f, "25"),
         }
     }
 }
