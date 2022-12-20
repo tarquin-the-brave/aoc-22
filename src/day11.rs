@@ -58,7 +58,7 @@ impl Monkey {
         }
     }
 
-    fn run_turn(&mut self) -> Vec<(usize, u64)> {
+    fn run_turn(&mut self, ceiling: Option<u64>) -> Vec<(usize, u64)> {
         let mut pass_to_monkeys = Vec::<(usize, u64)>::new();
 
         while let Some(worry) = self.items.pop_front() {
@@ -66,7 +66,13 @@ impl Monkey {
                 Op::Plus(x) => worry + x,
                 Op::Multiply(x) => worry * x,
                 Op::Square => worry * worry,
-            } / 3;
+            };
+            let worry = if let Some(ceiling) = ceiling {
+                worry % ceiling
+            } else {
+                worry / 3
+            };
+
             let to_monkey: usize = if worry % self.test_divisible_by == 0 {
                 self.to_true
             } else {
@@ -80,7 +86,7 @@ impl Monkey {
     }
 }
 
-pub fn part1(input: String) -> u64 {
+fn run_turns(input: String, turns: u64, use_ceiling: bool) -> u64 {
     use itertools::Itertools as _;
     let mut monkeys = input
         .lines()
@@ -88,17 +94,28 @@ pub fn part1(input: String) -> u64 {
         .into_iter()
         .map(|chunk| Monkey::parse(chunk.map(|s| s.to_string()).collect()))
         .collect::<Vec<Monkey>>();
-    println!("{:?}", monkeys);
 
-    for round in 0..20 {
+    // Use the Lowest Common Multiple of the numbers that we test
+    // divisibility by as a ceiling value for our worry.
+    //
+    // By restricting worry to modulo lcm ceiling the divisibility
+    // check will all work the same
+    let ceiling = if use_ceiling {
+        monkeys
+            .iter()
+            .map(|m| m.test_divisible_by)
+            .reduce(num::integer::lcm)
+    } else {
+        None
+    };
+
+    for _ in 0..turns {
         for idx in 0..monkeys.len() {
-            let updates = monkeys[idx].run_turn();
+            let updates = monkeys[idx].run_turn(ceiling);
             for (idx, worry) in updates {
                 monkeys[idx].items.push_back(worry);
             }
         }
-        println!("Round: {}", round + 1);
-        println!("{:?}", monkeys.iter().map(|m| &m.items).collect::<Vec<_>>());
     }
 
     let mut scores = monkeys
@@ -110,7 +127,10 @@ pub fn part1(input: String) -> u64 {
     scores.pop().unwrap() * scores.pop().unwrap()
 }
 
-#[allow(unused_variables)]
-pub fn part2(input: String) -> usize {
-    todo!()
+pub fn part1(input: String) -> u64 {
+    run_turns(input, 20, false)
+}
+
+pub fn part2(input: String) -> u64 {
+    run_turns(input, 10000, true)
 }
