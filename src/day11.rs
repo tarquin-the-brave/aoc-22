@@ -2,19 +2,19 @@ use std::collections::VecDeque;
 
 #[derive(Debug)]
 enum Op {
-    Plus(u32),
-    Multiply(u32),
+    Plus(u64),
+    Multiply(u64),
     Square,
 }
 
 #[derive(Debug)]
 struct Monkey {
-    items: VecDeque<u32>,
+    items: VecDeque<u64>,
     op: Op,
-    test_divisible_by: u32,
+    test_divisible_by: u64,
     to_true: usize,
     to_false: usize,
-    items_count: u32,
+    items_count: u64,
 }
 
 impl Monkey {
@@ -58,8 +58,8 @@ impl Monkey {
         }
     }
 
-    fn run_turn(&mut self) -> Vec<(usize, u32)> {
-        let mut pass_to_monkeys = Vec::<(usize, u32)>::new();
+    fn run_turn(&mut self) -> Vec<(usize, u64)> {
+        let mut pass_to_monkeys = Vec::<(usize, u64)>::new();
 
         while let Some(worry) = self.items.pop_front() {
             let worry = match self.op {
@@ -80,7 +80,7 @@ impl Monkey {
     }
 }
 
-pub fn part1(input: String) -> u32 {
+pub fn part1(input: String) -> u64 {
     use itertools::Itertools as _;
     let mut monkeys = input
         .lines()
