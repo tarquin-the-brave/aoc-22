@@ -151,9 +151,12 @@ pub fn part1(input: String) -> usize {
 #[allow(unused_variables)]
 pub fn part2(input: String) -> usize {
     let (mut grid, ymax, xmin, xmax) = populate_grid(&input, false);
-    println!("foo");
     assert!(ymax < 500);
     grid.push([Cell::Rock].repeat(1000));
     print_grid(&grid, ymax, xmin, xmax);
-    fill_with_sand(&mut grid, ymax, 0, ymax, false)
+    let foo = fill_with_sand(&mut grid, ymax, 0, ymax, false);
+    println!();
+    println!();
+    print_grid(&grid, ymax, xmin, xmax);
+    foo
 }
