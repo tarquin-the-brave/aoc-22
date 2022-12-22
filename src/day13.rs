@@ -1,3 +1,4 @@
+#[derive(Clone, PartialEq, Debug)]
 enum Data {
     List(Vec<Data>),
     Int(u64),
@@ -41,6 +42,15 @@ impl Data {
     }
 }
 
+// impl std::fmt::Display for Data {
+//     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+//         match self {
+//             Self::Int(n) => n.fmt(f),
+//             Self::List(list) => format!("{list}").fmt(f),
+//         }
+//     }
+// }
+
 pub fn part1(input: String) -> usize {
     use itertools::Itertools as _;
     input
@@ -65,7 +75,29 @@ pub fn part1(input: String) -> usize {
         .sum()
 }
 
-#[allow(unused_variables)]
 pub fn part2(input: String) -> usize {
-    todo!()
+    use itertools::Itertools as _;
+    let div2 = Data::from_json(&serde_json::from_str("[[2]]").unwrap());
+    let div6 = Data::from_json(&serde_json::from_str("[[6]]").unwrap());
+    input
+        .lines()
+        .filter(|line| *line != "")
+        .map(|line| Data::from_json(&serde_json::from_str(line).unwrap()))
+        .chain(vec![div2.clone(), div6.clone()].into_iter())
+        .sorted_by(|a, b| {
+            use std::cmp::Ordering::*;
+            match a.correct_order(&b) {
+                Some(true) => Less,
+                Some(false) => Greater,
+                None => Equal,
+            }
+        })
+        .zip(1..)
+        .fold(1, |decoder_key, (packet, n)| {
+            if packet == div2 || packet == div6 {
+                decoder_key * n
+            } else {
+                decoder_key
+            }
+        })
 }
