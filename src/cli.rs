@@ -61,7 +61,7 @@ pub enum Part {
 }
 
 #[derive(clap::ValueEnum, Clone)]
-enum Input {
+pub enum Input {
     Test,
     Full,
 }
@@ -124,7 +124,7 @@ pub struct Cli {
     #[arg(short, long, value_enum)]
     pub part: Part,
     #[arg(short, long, value_enum)]
-    input: Input,
+    pub input: Input,
     #[arg(long, default_value = "inputs")]
     input_dir: std::path::PathBuf,
 }

@@ -26,7 +26,7 @@ mod day8;
 mod day9;
 
 fn main() {
-    use cli::{Cli, Day, Part};
+    use cli::{Cli, Day, Input, Part};
     let cli: Cli = clap::Parser::parse();
     let input_file_path = cli.input_file_path();
     let input_str = std::fs::read_to_string(&input_file_path).expect(&format!(
@@ -121,7 +121,16 @@ fn main() {
             println!("{}", day14::part2(input_str));
         }
         (Day::Fifteen, Part::One) => {
-            println!("{}", day15::part1(input_str));
+            println!(
+                "{}",
+                day15::part1(
+                    input_str,
+                    match cli.input {
+                        Input::Test => 10,
+                        Input::Full => 2_000_000,
+                    }
+                )
+            );
         }
         (Day::Fifteen, Part::Two) => {
             println!("{}", day15::part2(input_str));
