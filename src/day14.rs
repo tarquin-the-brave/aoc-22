@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq)]
 enum Cell {
     Empty,
     Rock,
@@ -17,7 +17,7 @@ impl std::fmt::Display for Cell {
     }
 }
 
-fn populate_grid(input: &str) -> (Vec<Vec<Cell>>, usize, usize, usize) {
+fn populate_grid(input: &str, part1: bool) -> (Vec<Vec<Cell>>, usize, usize, usize) {
     use itertools::Itertools as _;
     let mut ymax = 0;
     let mut xmax = 500;
@@ -49,7 +49,7 @@ fn populate_grid(input: &str) -> (Vec<Vec<Cell>>, usize, usize, usize) {
 
     let mut grid = Vec::new();
     for _ in 0..ymax + 2 {
-        grid.push([Cell::Empty].repeat(xmax + 2));
+        grid.push([Cell::Empty].repeat(if part1 { xmax + 2 } else { 1000 }));
     }
 
     for path in &paths {
@@ -91,7 +91,7 @@ fn path_points(path: &[(usize, usize)]) -> HashSet<(usize, usize)> {
 }
 
 fn print_grid(grid: &Vec<Vec<Cell>>, ymax: usize, xmin: usize, xmax: usize) {
-    for j in 0..ymax + 1 {
+    for j in 0..ymax + 2 {
         for i in xmin - 1..xmax + 2 {
             print!("{}", grid[j][i]);
         }
@@ -99,13 +99,61 @@ fn print_grid(grid: &Vec<Vec<Cell>>, ymax: usize, xmin: usize, xmax: usize) {
     }
 }
 
+fn fill_with_sand(
+    grid: &mut Vec<Vec<Cell>>,
+    ymax: usize,
+    xmin: usize,
+    xmax: usize,
+    part1: bool,
+) -> usize {
+    let mut grains = 0;
+    let start = (500, 0);
+    let (mut i, mut j) = start.clone();
+    loop {
+        if part1 {
+            if i < xmin || i > xmax || j > ymax {
+                break;
+            }
+        } else {
+            if grid[start.1][start.0] == Cell::Sand {
+                break;
+            }
+        }
+
+        if grid[j + 1][i] == Cell::Empty {
+            j += 1;
+        } else if grid[j + 1][i - 1] == Cell::Empty {
+            j += 1;
+            i -= 1;
+        } else if grid[j + 1][i + 1] == Cell::Empty {
+            j += 1;
+            i += 1;
+        } else {
+            grid[j][i] = Cell::Sand;
+            (i, j) = start.clone();
+            grains += 1;
+        }
+    }
+
+    grains
+}
+
 pub fn part1(input: String) -> usize {
-    let (mut grid, ymax, xmin, xmax) = populate_grid(&input);
+    let (mut grid, ymax, xmin, xmax) = populate_grid(&input, true);
     print_grid(&grid, ymax, xmin, xmax);
-    7
+    let foo = fill_with_sand(&mut grid, ymax, xmin, xmax, true);
+    println!();
+    println!();
+    print_grid(&grid, ymax, xmin, xmax);
+    foo
 }
 
 #[allow(unused_variables)]
 pub fn part2(input: String) -> usize {
-    todo!()
+    let (mut grid, ymax, xmin, xmax) = populate_grid(&input, false);
+    println!("foo");
+    assert!(ymax < 500);
+    grid.push([Cell::Rock].repeat(1000));
+    print_grid(&grid, ymax, xmin, xmax);
+    fill_with_sand(&mut grid, ymax, 0, ymax, false)
 }
