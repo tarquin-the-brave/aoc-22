@@ -1,5 +1,5 @@
-use petgraph::graph::{NodeIndex, UnGraph};
-use std::collections::{HashMap, HashSet};
+use petgraph::graph::{DiGraph, NodeIndex};
+use std::collections::{BTreeSet, HashMap, HashSet};
 
 fn parse_height(c: char) -> i8 {
     match c {
@@ -41,9 +41,6 @@ pub fn part1(input: String) -> usize {
         .map(|line| line.chars().map(parse_height).collect::<Vec<i8>>())
         .collect::<Vec<Vec<i8>>>();
 
-    // for line in &points {
-    //     println!("{:?}", line);
-    // }
     let mut start = (0, 0);
     let mut end = (0, 0);
     let mut found_start = false;
@@ -64,10 +61,8 @@ pub fn part1(input: String) -> usize {
     assert!(found_start);
     assert!(found_end);
 
-    println!("Start: {:?}, End: {:?}", start, end);
-
     // initiate undirected graph
-    let mut g = UnGraph::<(usize, usize), u8>::new_undirected();
+    let mut g = DiGraph::<(usize, usize), u8>::new();
     let mut point_to_node_idx = HashMap::<(usize, usize), NodeIndex>::new();
 
     let ylen = points.len();
@@ -88,22 +83,13 @@ pub fn part1(input: String) -> usize {
     let mut edges = HashSet::<(NodeIndex, NodeIndex)>::new();
 
     let mut add_edge = |ii: usize, jj: usize, height: i8, node_idx: &NodeIndex| {
-        if (points[jj][ii] - height).abs() < 2 {
+        if (points[jj][ii] - height) < 2 {
             let other_node_idx = point_to_node_idx.get(&(ii, jj)).unwrap();
-            if !edges.contains(&(*node_idx, *other_node_idx))
-                && !edges.contains(&(*other_node_idx, *node_idx))
-            {
+            if !edges.contains(&(*node_idx, *other_node_idx)) {
                 edges.insert((*node_idx, *other_node_idx));
-                // println!(
-                //     "Edge added from {:?} to {:?}",
-                //     g.node_weight(*node_idx).unwrap(),
-                //     g.node_weight(*other_node_idx).unwrap()
-                // );
             }
         }
     };
-
-    println!("\nAdding edges from inner points\n");
 
     // inner points
     for j in 1..ylen - 1 {
@@ -112,17 +98,11 @@ pub fn part1(input: String) -> usize {
             let node_idx = point_to_node_idx.get(&(i, j)).unwrap();
 
             add_edge(i + 1, j, height, node_idx);
-            // add_edge(i + 1, j - 1, height, node_idx);
             add_edge(i, j - 1, height, node_idx);
-            // add_edge(i - 1, j - 1, height, node_idx);
             add_edge(i - 1, j, height, node_idx);
-            // add_edge(i - 1, j + 1, height, node_idx);
             add_edge(i, j + 1, height, node_idx);
-            // add_edge(i + 1, j + 1, height, node_idx);
         }
     }
-
-    println!("\nAdding edges from top edge\n");
 
     // top edge
     for i in 1..xlen - 1 {
@@ -133,8 +113,6 @@ pub fn part1(input: String) -> usize {
         add_edge(i + 1, 0, height, node_idx);
     }
 
-    println!("\nAdding edges from bottom edge\n");
-
     // bottom edge
     for i in 1..xlen - 1 {
         let height = points[ylen - 1][i];
@@ -144,8 +122,6 @@ pub fn part1(input: String) -> usize {
         add_edge(i + 1, ylen - 1, height, node_idx);
     }
 
-    println!("\nAdding edges from left edge\n");
-
     // left edge
     for j in 1..ylen - 1 {
         let height = points[j][0];
@@ -154,8 +130,6 @@ pub fn part1(input: String) -> usize {
         add_edge(1, j, height, node_idx);
         add_edge(0, j + 1, height, node_idx);
     }
-
-    println!("\nAdding edges from right edge\n");
 
     // right edge
     for j in 1..ylen - 1 {
@@ -199,29 +173,42 @@ pub fn part1(input: String) -> usize {
     }
 
     // add all those edges into the graph
-    for (from, to) in edges {
-        // let from_p = g.node_weight(from).unwrap();
-        // let to_p = g.node_weight(to).unwrap();
-
-        // println!("Edge from: {:?}, to: {:?}", from_p, to_p);
-        g.add_edge(from, to, 1);
+    for (from, to) in &edges {
+        g.add_edge(*from, *to, 1);
     }
 
-    println!("\nGraph has {} edges\n", g.edge_count());
-    // a-star for shortest path from start to end
+    assert_eq!(g.edge_count(), edges.len());
+
     let start_idx = point_to_node_idx.get(&start).unwrap();
     let end_idx = point_to_node_idx.get(&end).unwrap();
 
-    let (steps, path) =
-        petgraph::algo::astar(&g, *start_idx, |finish| finish == *end_idx, |_| 1, |_| 0).unwrap();
+    let distances = petgraph::algo::dijkstra(&g, *start_idx, None, |_| 1);
 
-    path.into_iter()
-        .for_each(|node| println!("{:?}", g.node_weight(node).unwrap()));
+    println!("{}", distances.get(end_idx).unwrap());
 
-    steps
+    // part 2
+    let mut starts = HashSet::new();
+    for j in 0..ylen - 1 {
+        for i in 0..xlen - 1 {
+            if points[j][i] == 1 {
+                starts.insert((i, j));
+            }
+        }
+    }
+
+    *starts
+        .iter()
+        .filter_map(|start| {
+            let start_idx = point_to_node_idx.get(&start).unwrap();
+            let distances = petgraph::algo::dijkstra(&g, *start_idx, None, |_| 1);
+            distances.get(end_idx).cloned()
+        })
+        .collect::<BTreeSet<_>>()
+        .first()
+        .unwrap()
 }
 
-#[allow(unused_variables)]
 pub fn part2(input: String) -> usize {
-    todo!()
+    // easier just to keep writing code in part1 function...
+    part1(input)
 }
