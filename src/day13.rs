@@ -42,15 +42,6 @@ impl Data {
     }
 }
 
-// impl std::fmt::Display for Data {
-//     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-//         match self {
-//             Self::Int(n) => n.fmt(f),
-//             Self::List(list) => format!("{list}").fmt(f),
-//         }
-//     }
-// }
-
 pub fn part1(input: String) -> usize {
     use itertools::Itertools as _;
     input
