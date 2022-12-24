@@ -133,7 +133,17 @@ fn main() {
             );
         }
         (Day::Fifteen, Part::Two) => {
-            println!("{}", day15::part2(input_str));
+            println!(
+                "{}",
+                day15::part2(
+                    input_str,
+                    0,
+                    match cli.input {
+                        Input::Test => 20,
+                        Input::Full => 4_000_000,
+                    }
+                )
+            );
         }
         (Day::Sixteen, Part::One) => {
             println!("{}", day16::part1(input_str));
