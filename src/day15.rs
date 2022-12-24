@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 #[derive(Clone, Copy, PartialEq)]
 enum Cell {
     Sensor,
@@ -27,46 +28,12 @@ fn manhattan_diff((x1, y1): &(usize, usize), (x2, y2): &(usize, usize)) -> usize
     xdiff + ydiff
 }
 
+struct Points(HashMap<i32, HashMap<i32, Cell>>);
+
 pub fn part1(input: String, check_row: usize) -> usize {
     let sb_pairs = parse_input(&input);
-    // big dock off offset to avoid negative numbers
-    let offset = 5_000_000;
-    let sb_pairs = sb_pairs.iter().map(|((xs, ys), (xb, yb))| {
-        let a = (xs + offset) as usize;
-        let b = (ys + offset) as usize;
-        let c = (xb + offset) as usize;
-        let d = (xb + offset) as usize;
-        ((a, b), (c, d))
-    });
 
-    let offs = offset as usize;
-    let mut grid = Vec::new();
-    for _ in 0..offs * 2 {
-        grid.push([Cell::Unknown].repeat(offs * 2));
-    }
-
-    for (sensor, beacon) in sb_pairs {
-        let (xs, ys) = sensor;
-        let (xb, yb) = beacon;
-
-        grid[ys][xs] = Cell::Sensor;
-        grid[yb][xb] = Cell::Beacon;
-
-        let diff = manhattan_diff(&sensor, &beacon);
-
-        for j in ys - diff..=ys + diff {
-            for i in xs - diff..=xs + diff {
-                if manhattan_diff(&sensor, &(i, j)) <= diff && grid[j][i] == Cell::Unknown {
-                    grid[j][i] = Cell::Empty;
-                }
-            }
-        }
-    }
-
-    grid[check_row + offs]
-        .iter()
-        .filter(|cell| **cell == Cell::Empty)
-        .count()
+    todo!("use struct with hashmap inside for storing 2D points");
 }
 
 #[allow(unused_variables)]
