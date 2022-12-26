@@ -136,8 +136,6 @@ pub fn part2(input: String) -> u32 {
         me_valve_id: String,
         elephant_valve_id: String,
         open_valves: HashSet<String>,
-        previous_me_valve_id: String,
-        previous_elephant_valve_id: String,
     }
 
     impl State {
@@ -149,8 +147,6 @@ pub fn part2(input: String) -> u32 {
                 me_valve_id: valve_id.clone(),
                 elephant_valve_id: valve_id.clone(),
                 open_valves: HashSet::new(),
-                previous_me_valve_id: "foo".to_string(),
-                previous_elephant_valve_id: "bar".to_string(),
             }
         }
     }
@@ -169,8 +165,6 @@ pub fn part2(input: String) -> u32 {
             elephant_valve_id,
             minutes_elapsed,
             open_valves,
-            previous_me_valve_id,
-            previous_elephant_valve_id,
         } = queue.pop_front().unwrap();
 
         if minutes_elapsed > tracking_mins {
@@ -229,9 +223,6 @@ pub fn part2(input: String) -> u32 {
 
             // me open + elephant move
             for next_elephant_valve_id in &elephant_valve.connections {
-                if next_elephant_valve_id == &previous_elephant_valve_id {
-                    continue;
-                }
                 let possible_next_state = State {
                     total,
                     minutes_elapsed,
@@ -239,8 +230,6 @@ pub fn part2(input: String) -> u32 {
                     elephant_valve_id: next_elephant_valve_id.clone(),
                     flow_rate: flow_rate + me_valve.flow_rate,
                     open_valves: open_valves.clone(),
-                    previous_me_valve_id: previous_me_valve_id.clone(),
-                    previous_elephant_valve_id: elephant_valve_id.clone(),
                 };
                 maybe_add_to_queue(possible_next_state);
             }
@@ -256,8 +245,6 @@ pub fn part2(input: String) -> u32 {
                     elephant_valve_id: elephant_valve_id.clone(),
                     flow_rate: flow_rate + me_valve.flow_rate + elephant_valve.flow_rate,
                     open_valves: open_valves.clone(),
-                    previous_me_valve_id: previous_me_valve_id.clone(),
-                    previous_elephant_valve_id: previous_elephant_valve_id.clone(),
                 };
                 maybe_add_to_queue(possible_next_state);
             }
@@ -265,14 +252,8 @@ pub fn part2(input: String) -> u32 {
 
         // me move
         for next_me_valve_id in &me_valve.connections {
-            if next_me_valve_id == &previous_me_valve_id {
-                continue;
-            }
             // me move + elephant move
             for next_elephant_valve_id in &elephant_valve.connections {
-                if next_elephant_valve_id == &previous_elephant_valve_id {
-                    continue;
-                }
                 // we won't move to the same place...
                 if next_me_valve_id == next_elephant_valve_id {
                     continue;
@@ -284,8 +265,6 @@ pub fn part2(input: String) -> u32 {
                     elephant_valve_id: next_elephant_valve_id.clone(),
                     flow_rate,
                     open_valves: open_valves.clone(),
-                    previous_me_valve_id: me_valve_id.clone(),
-                    previous_elephant_valve_id: elephant_valve_id.clone(),
                 };
                 maybe_add_to_queue(possible_next_state);
             }
@@ -301,8 +280,6 @@ pub fn part2(input: String) -> u32 {
                     elephant_valve_id: elephant_valve_id.clone(),
                     flow_rate: flow_rate + elephant_valve.flow_rate,
                     open_valves: open_valves.clone(),
-                    previous_me_valve_id: me_valve_id.clone(),
-                    previous_elephant_valve_id: previous_elephant_valve_id.clone(),
                 };
                 maybe_add_to_queue(possible_next_state);
             }
