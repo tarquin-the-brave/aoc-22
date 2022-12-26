@@ -157,7 +157,6 @@ pub fn part2(input: String) -> u32 {
 
     let valves = parse_valves(&input);
     let mut queue = VecDeque::<State>::new();
-
     let mut tracking_mins = 0;
 
     queue.push_back(State::start("AA".to_string()));
@@ -189,6 +188,26 @@ pub fn part2(input: String) -> u32 {
         let me_valve = valves.get(&me_valve_id).unwrap();
         let elephant_valve = valves.get(&elephant_valve_id).unwrap();
 
+        let mut maybe_add_to_queue = |possible_next_state: State| {
+            if let None = queue.iter().find(|queued_state| {
+                let queued_valve_set =
+                    vec![&queued_state.me_valve_id, &queued_state.elephant_valve_id]
+                        .into_iter()
+                        .collect::<HashSet<_>>();
+                let possible_next_valve_set = vec![
+                    &possible_next_state.me_valve_id,
+                    &possible_next_state.elephant_valve_id,
+                ]
+                .into_iter()
+                .collect::<HashSet<_>>();
+                queued_valve_set == possible_next_valve_set
+                    && queued_state.total >= possible_next_state.total
+                    && queued_state.flow_rate >= possible_next_state.flow_rate
+            }) {
+                queue.push_back(possible_next_state);
+            }
+        };
+
         // in all cases where we're adding a possible state, do not add
         // if we can find a queued state where:
         // - set of elephant and my valves are the same,
@@ -209,37 +228,21 @@ pub fn part2(input: String) -> u32 {
             open_valves.insert(me_valve_id.clone());
 
             // me open + elephant move
-            for elephant_valve_id in &elephant_valve.connections {
-                if elephant_valve_id == &previous_elephant_valve_id {
+            for next_elephant_valve_id in &elephant_valve.connections {
+                if next_elephant_valve_id == &previous_elephant_valve_id {
                     continue;
                 }
                 let possible_next_state = State {
                     total,
                     minutes_elapsed,
                     me_valve_id: me_valve_id.clone(),
-                    elephant_valve_id: elephant_valve_id.clone(),
+                    elephant_valve_id: next_elephant_valve_id.clone(),
                     flow_rate: flow_rate + me_valve.flow_rate,
                     open_valves: open_valves.clone(),
                     previous_me_valve_id: previous_me_valve_id.clone(),
-                    previous_elephant_valve_id: previous_elephant_valve_id.clone(),
+                    previous_elephant_valve_id: elephant_valve_id.clone(),
                 };
-                if let None = queue.iter().find(|queued_state| {
-                    let queued_valve_set =
-                        vec![&queued_state.me_valve_id, &queued_state.elephant_valve_id]
-                            .into_iter()
-                            .collect::<HashSet<_>>();
-                    let possible_next_valve_set = vec![
-                        &possible_next_state.me_valve_id,
-                        &possible_next_state.elephant_valve_id,
-                    ]
-                    .into_iter()
-                    .collect::<HashSet<_>>();
-                    queued_valve_set == possible_next_valve_set
-                        && queued_state.total >= possible_next_state.total
-                        && queued_state.flow_rate >= possible_next_state.flow_rate
-                }) {
-                    queue.push_back(possible_next_state);
-                }
+                maybe_add_to_queue(possible_next_state);
             }
 
             // me open + elephant open
@@ -256,67 +259,35 @@ pub fn part2(input: String) -> u32 {
                     previous_me_valve_id: previous_me_valve_id.clone(),
                     previous_elephant_valve_id: previous_elephant_valve_id.clone(),
                 };
-                if let None = queue.iter().find(|queued_state| {
-                    let queued_valve_set =
-                        vec![&queued_state.me_valve_id, &queued_state.elephant_valve_id]
-                            .into_iter()
-                            .collect::<HashSet<_>>();
-                    let possible_next_valve_set = vec![
-                        &possible_next_state.me_valve_id,
-                        &possible_next_state.elephant_valve_id,
-                    ]
-                    .into_iter()
-                    .collect::<HashSet<_>>();
-                    queued_valve_set == possible_next_valve_set
-                        && queued_state.total >= possible_next_state.total
-                        && queued_state.flow_rate >= possible_next_state.flow_rate
-                }) {
-                    queue.push_back(possible_next_state);
-                }
+                maybe_add_to_queue(possible_next_state);
             }
         }
 
         // me move
-        for me_valve_id in &me_valve.connections {
-            if me_valve_id == &previous_me_valve_id {
+        for next_me_valve_id in &me_valve.connections {
+            if next_me_valve_id == &previous_me_valve_id {
                 continue;
             }
             // me move + elephant move
-            for elephant_valve_id in &elephant_valve.connections {
-                if elephant_valve_id == &previous_elephant_valve_id {
+            for next_elephant_valve_id in &elephant_valve.connections {
+                if next_elephant_valve_id == &previous_elephant_valve_id {
                     continue;
                 }
                 // we won't move to the same place...
-                if me_valve_id == elephant_valve_id {
+                if next_me_valve_id == next_elephant_valve_id {
                     continue;
                 }
                 let possible_next_state = State {
                     total,
                     minutes_elapsed,
-                    me_valve_id: me_valve_id.clone(),
-                    elephant_valve_id: elephant_valve_id.clone(),
+                    me_valve_id: next_me_valve_id.clone(),
+                    elephant_valve_id: next_elephant_valve_id.clone(),
                     flow_rate,
                     open_valves: open_valves.clone(),
-                    previous_me_valve_id: previous_me_valve_id.clone(),
-                    previous_elephant_valve_id: previous_elephant_valve_id.clone(),
+                    previous_me_valve_id: me_valve_id.clone(),
+                    previous_elephant_valve_id: elephant_valve_id.clone(),
                 };
-                if let None = queue.iter().find(|queued_state| {
-                    let queued_valve_set =
-                        vec![&queued_state.me_valve_id, &queued_state.elephant_valve_id]
-                            .into_iter()
-                            .collect::<HashSet<_>>();
-                    let possible_next_valve_set = vec![
-                        &possible_next_state.me_valve_id,
-                        &possible_next_state.elephant_valve_id,
-                    ]
-                    .into_iter()
-                    .collect::<HashSet<_>>();
-                    queued_valve_set == possible_next_valve_set
-                        && queued_state.total >= possible_next_state.total
-                        && queued_state.flow_rate >= possible_next_state.flow_rate
-                }) {
-                    queue.push_back(possible_next_state);
-                }
+                maybe_add_to_queue(possible_next_state);
             }
 
             // me move + elephant open
@@ -326,30 +297,14 @@ pub fn part2(input: String) -> u32 {
                 let possible_next_state = State {
                     total,
                     minutes_elapsed,
-                    me_valve_id: me_valve_id.clone(),
+                    me_valve_id: next_me_valve_id.clone(),
                     elephant_valve_id: elephant_valve_id.clone(),
                     flow_rate: flow_rate + elephant_valve.flow_rate,
                     open_valves: open_valves.clone(),
-                    previous_me_valve_id: previous_me_valve_id.clone(),
+                    previous_me_valve_id: me_valve_id.clone(),
                     previous_elephant_valve_id: previous_elephant_valve_id.clone(),
                 };
-                if let None = queue.iter().find(|queued_state| {
-                    let queued_valve_set =
-                        vec![&queued_state.me_valve_id, &queued_state.elephant_valve_id]
-                            .into_iter()
-                            .collect::<HashSet<_>>();
-                    let possible_next_valve_set = vec![
-                        &possible_next_state.me_valve_id,
-                        &possible_next_state.elephant_valve_id,
-                    ]
-                    .into_iter()
-                    .collect::<HashSet<_>>();
-                    queued_valve_set == possible_next_valve_set
-                        && queued_state.total >= possible_next_state.total
-                        && queued_state.flow_rate >= possible_next_state.flow_rate
-                }) {
-                    queue.push_back(possible_next_state);
-                }
+                maybe_add_to_queue(possible_next_state);
             }
         }
     }
