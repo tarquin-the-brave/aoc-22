@@ -72,7 +72,6 @@ pub fn part1(input: String, check_row: i64) -> usize {
     empty_count
 }
 
-#[allow(unused_variables)]
 pub fn part2(input: String, search_min: i64, search_max: i64) -> i64 {
     let diffs_and_sensors = parse_input(&input)
         .into_iter()
